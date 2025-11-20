@@ -1,0 +1,18 @@
+services:
+
+  vaultwarden-app:
+    image: docker.io/nfrastack/vaultwarden
+    container_name: vaultwarden-app
+    volumes:
+      - ./data:/data
+      - ./logs:/logs
+    environment:
+      - TIMEZONE=America/Vancouver
+    networks:
+      - services
+    restart: always
+
+networks:
+  services:
+    external: true
+

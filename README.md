@@ -1,0 +1,167 @@
+# nfrastack/container-vaultwarden
+
+## About
+
+This repository will build a container for [Vaultwarden](https://www.vaultwarden.net). A ..
+
+## Maintainer
+
+- [Nfrastack](https://www.nfrastack.com)
+
+## Table of Contents
+
+- [About](#about)
+- [Maintainer](#maintainer)
+- [Table of Contents](#table-of-contents)
+- [Installation](#installation)
+  - [Prebuilt Images](#prebuilt-images)
+  - [Quick Start](#quick-start)
+  - [Persistent Storage](#persistent-storage)
+- [Environment Variables](#environment-variables)
+  - [Base Images used](#base-images-used)
+  - [Core Configuration](#core-configuration)
+- [Users and Groups](#users-and-groups)
+  - [Networking](#networking)
+- [Maintenance](#maintenance)
+  - [Shell Access](#shell-access)
+- [Support & Maintenance](#support--maintenance)
+- [License](#license)
+
+## Installation
+
+### Prebuilt Images
+
+Feature limited builds of the image are available on the [Github Container Registry](https://github.com/nfrastack/container-vaultwarden/pkgs/container/container-vaultwarden) and [Docker Hub](https://hub.docker.com/r/nfrastack/vaultwarden).
+
+To unlock advanced features, one must provide a code to be able to change specific environment variables from defaults. Support the development to gain access to a code.
+
+To get access to the image use your container orchestrator to pull from the following locations:
+
+```
+ghcr.io/nfrastack/container-vaultwarden:(image_tag)
+docker.io/nfrastack/vaultwarden:(image_tag)
+```
+
+Image tag syntax is:
+
+`<image>:<optional tag>-<optional_distribution>_<optional_distribution_variant>`
+
+Example:
+
+`ghcr.io/nfrastack/container-vaultwarden:latest` or
+
+`ghcr.io/nfrastack/container-vaultwarden:1.0` or optionally
+
+`ghcr.io/nfrastack/container-vaultwarden:1.0-alpine` or optinally
+
+`ghcr.io/nfrastack/container-vaultwarden:alpine`
+
+- `latest` will be the most recent commit
+- An optional `tag` may exist that matches the [CHANGELOG](CHANGELOG.md) - These are the safest
+- If it is built for multiple distributions there may exist a value of `alpine` or `debian`
+- If there are multiple distribution variations it may include a version - see the registry for availability
+
+Have a look at the container registries and see what tags are available.
+
+#### Multi-Architecture Support
+
+Images are built for `amd64` by default, with optional support for `arm64` and other architectures.
+
+### Quick Start
+
+- The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/). See the examples folder for a working [compose.yml](examples/compose.yml) that can be modified for your use.
+
+- Map [persistent storage](#persistent-storage) for access to configuration and data files for backup.
+- Set various [environment variables](#environment-variables) to understand the capabilities of this image.
+
+### Persistent Storage
+
+The following directories are used for configuration and can be mapped for persistent storage.
+
+| Directory | Description |
+| --------- | ----------- |
+| `/data`   | Data        |
+| `/logs`   | Logs        |
+### Environment Variables
+
+#### Base Images used
+
+This image relies on a customized base image in order to work.
+Be sure to view the following repositories to understand all the customizable options:
+
+| Image                                                   | Description |
+| ------------------------------------------------------- | ----------- |
+| [OS Base](https://github.com/nfrastack/container-base/) | Base Image  |
+
+Below is the complete list of available options that can be used to customize your installation.
+
+- Variables showing an 'x' under the `Advanced` column can only be set if the containers advanced functionality is enabled.
+
+#### Core Configuration
+
+| Parameter                          | Description                                                               | Default                          | Advanced |
+| ---------------------------------- | ------------------------------------------------------------------------- | -------------------------------- | -------- |
+| `SETUP_TYPE`                       | Setup mode (e.g., AUTO or MANUAL)                                         | `AUTO`                           |          |
+| `DB_TYPE`                          | Database Type for storage (supported: sqlite, mysql, postgresql)          | `sqlite`                         |          |
+| `DATA_PATH`                        | Base data directory                                                       | `/data/`                         |          |
+| `ICON_CACHE_PATH`                  | Icon cache directory (under DATA_PATH)                                    | `${DATA_PATH%/}/icon_cache/`     |          |
+| `ATTACHMENTS_PATH`                 | Attachments storage directory (under DATA_PATH)                           | `${DATA_PATH%/}/attachments/`    |          |
+| `SENDS_PATH`                       | "Sends" directory for temporary send stores                               | `${DATA_PATH%/}/sends/`          |          |
+| `TMP_PATH`                         | Temporary working directory (under DATA_PATH)                             | `${DATA_PATH%/}/tmp/`            |          |
+| `TEMPLATES_PATH`                   | Templates directory (under DATA_PATH)                                     | `${DATA_PATH%/}/templates/`      |          |
+| `DB_SQLITE_PATH`                   | Directory for SQLite DB file (under DATA_PATH)                            | `${DATA_PATH%/}/db/`             |          |
+| `DB_SQLITE_NAME`                   | SQLite file name                                                          | `db.sqlite3`                     |          |
+| `DB_SQLITE_ENABLE_WAL`             | Enable SQLite WAL (Write-Ahead Logging)                                   | `true`                           |          |
+| `DB_SQLITE_CONNECTION_RETRIES`     | Number of retries when connecting to DB                                   | `15`                             |          |
+| `DB_SQLITE_TIMEOUT_DB`             | Database connect timeout (seconds)                                        | `30`                             |          |
+| `DB_SQLITE_TIMEOUT_IDLE`           | Database idle timeout (seconds)                                           | `600`                            |          |
+| `DB_SQLITE_CONNECTIONS_MIN`        | Minimum DB connections                                                    | `2`                              |          |
+| `DB_SQLITE_CONNECTIONS_MAX`        | Maximum DB connections                                                    | `10`                             |          |
+| `DB_SQLITE_INIT`                   | DB init string to run on connection                                       | `""`                             |          |
+| `LOG_PATH`                         | Logfiles base path                                                        | `/logs/`                         |          |
+| `LOG_FILE`                         | Logfile name (may be joined to LOG_PATH by the container if not absolute) | `vaultwarden.log`                |          |
+| `LOG_TYPE`                         | Log output type (e.g., file, stdout)                                      | `file`                           |          |
+| `LOG_ENABLE_TIMESTAMPS`            | Prepend timestamps to log lines                                           | `TRUE`                           |          |
+| `LOG_TIMESTAMP_FORMAT`             | Timestamp format used for logs                                            | `%Y-%m-%d %H:%M:%S.%3f`          |          |
+| `LOG_LEVEL`                        | Log level (`trace`, `debug`, `info`, `warn`, `error`, `off`)              | `info`                           |          |
+| `ENABLE_WEB_VAULT`                 | Serve the included Web Vault static files                                 | `true`                           |          |
+| `WEB_VAULT_PATH`                   | Path to the web vault files in the container                              | `/app/web-vault/`                |          |
+| `ENABLE_WEBSOCKETS`                | Enable websocket support                                                  | `true`                           |          |
+| `WEB_VAULT_DOMAIN`                 | Domain for the web vault (used by clients)                                | `http://localhost`               |          |
+| `ENABLE_PUSH_NOTIFICATIONS`        | Enable push notifications                                                 | `false`                          |          |
+| `PUSH_NOTIFICASTIONS_RELAY_URI`    | Push notifications relay URI                                              | `https://push.bitwarden.com`     |          |
+| `PUSH_NOTIFICASTIONS_IDENTITY_URI` | Identity URI for push notifications                                       | `https://identity.bitwarden.com` |          |
+| `LISTEN_PORT`                      | Port for Vaultwarden to listen on                                         | `8000`                           |          |
+
+## Users and Groups
+
+| Type  | Name          | ID   |
+| ----- | ------------- | ---- |
+| User  | `vaultwarden` | 1000 |
+| Group | `vaultwarden` | 1000 |
+
+### Networking
+
+| Port   | Protocol | Description        |
+| ------ | -------- | ------------------ |
+| `8000` | tcp      | vaultwarden Daemon |
+
+* * *
+
+## Maintenance
+
+### Shell Access
+
+For debugging and maintenance, `bash` and `sh` are available in the container.
+
+## Support & Maintenance
+
+- For community help, tips, and community discussions, visit the [Discussions board](/discussions).
+- For personalized support or a support agreement, see [Nfrastack Support](https://nfrastack.com/).
+- To report bugs, submit a [Bug Report](issues/new). Usage questions will be closed as not-a-bug.
+- Feature requests are welcome, but not guaranteed. For prioritized development, consider a support agreement.
+- Updates are best-effort, with priority given to active production use and support agreements.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

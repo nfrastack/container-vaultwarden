@@ -1,0 +1,141 @@
+# SPDX-FileCopyrightText: © 2025 Nfrastack <code@nfrastack.com>
+#
+# SPDX-License-Identifier: MIT
+
+vaultwarden_bootstrap_filesystem() {
+    create_folder \
+                    "${DATA_PATH},\
+                    ${ICON_CACHE_PATH},\
+                    ${ATTACHMENTS_PATH},\
+                    ${SENDS_PATH},\
+                    ${TMP_PATH},\
+                    ${TEMPLATES_PATH}" \
+                    vaultwarden:vaultwarden 750
+
+    case "${LOG_TYPE,,}" in
+        file )
+            if [ "$LOG_LEVEL}" != "off" ] ; then
+                create_folder \
+                                "${LOG_PATH}" \
+                                vaultwarden:vaultwarden 750
+
+                create_logrotate vaultwarden "${LOG_PATH%/}"/vaultwarden.log vaultwarden vaultwarden
+            fi
+        ;;
+    esac
+
+    case "${DB_TYPE,,}" in
+        sqlite* )
+            create_folder \
+                            "${DB_SQLITE_PATH}" \
+                            vaultwarden:vaultwarden 700
+        ;;
+    esac
+
+}
+
+vaultwarden_configure_proxy() {
+    if var_true "${ENABLE_NGINX}" ; then
+        update_template /etc/nginx/sites.available/vaultwarden.conf \
+                                                                    LISTEN_PORT
+    fi
+}
+
+vaultwarden_configure_application() {
+    if [ "${VAULTWARDEN_SETUP_MODE,,}" = "auto" ] ; then
+        transform_var file \
+                            BLAH
+
+    else
+        print_notice "Manual Mode Activated"
+    fi
+}
+
+translate_options() {
+    local defaults_file="${1:-/container/defaults/20-vaultwarden}"
+    local unset_old="${2:-true}"
+    local line src dst defaultpart
+
+    declare -A mapping_dst mapping_default computed_value src_present
+
+    # Guard: only run once
+    [ "${TRANSLATE_OPTIONS_RAN:-}" = "true" ] && return 0
+
+    # Ensure defaults file exists
+    [ -f "${defaults_file}" ] || return 0
+
+    # Build mapping: SRC_VAR=... #DEST_VAR=...
+    # Accept comments like '#DEST_VAR=...' and '# DEST_VAR=...'
+    while IFS= read -r line || [ -n "$line" ]; do
+        # skip blank lines or full-line comments
+        [[ -z "${line//[[:space:]]/}" || "${line##[[:space:]]}" == \#* ]] && continue
+
+        if [[ "$line" =~ ^[[:space:]]*([A-Z_][A-Z0-9_]*)[[:space:]]*=([^#]*?)#\s*([A-Z_][A-Z0-9_]*) ]]; then
+            src="${BASH_REMATCH[1]}"
+            defaultpart="${BASH_REMATCH[2]}"
+            dst="${BASH_REMATCH[3]}"
+
+            # Trim whitespace around defaultpart
+            defaultpart="${defaultpart#"${defaultpart%%[![:space:]]*}"}"
+            defaultpart="${defaultpart%"${defaultpart##*[![:space:]]}"}"
+
+            mapping_dst["$src"]="$dst"
+            mapping_default["$src"]="$defaultpart"
+        fi
+    done < "${defaults_file}"
+
+    # First pass: compute values for each source entry (use environment or defaults)
+    for src in "${!mapping_dst[@]}"; do
+        local val=""
+        local present=0
+
+        # Prefer exported env var
+        if printenv "${src}" >/dev/null 2>&1; then
+            val="$(printenv "${src}")"
+            present=1
+        # Else prefer shell-declared var
+        elif declare -p "${src}" >/dev/null 2>&1; then
+            val="${!src}"
+            present=1
+        else
+            # Fallback: evaluate defaultpart (may include expansions)
+            defaultpart="${mapping_default[$src]:-}"
+            if [ -n "${defaultpart}" ]; then
+                # Evaluate default expression safely into tmp (may use other env vars)
+                local tmp=""
+                eval "tmp=${defaultpart}" 2>/dev/null || tmp=""
+                val="${tmp:-}"
+            fi
+            present=0
+        fi
+
+        computed_value["$src"]="${val}"
+        src_present["$src"]="${present}"
+    done
+
+    # Second pass: export destination and unset source if needed
+    for src in "${!mapping_dst[@]}"; do
+        dst="${mapping_dst[$src]}"
+        val="${computed_value[$src]:-}"
+        present="${src_present[$src]:-0}"
+
+        # Don't override destination if set by the user
+        if printenv "${dst}" >/dev/null 2>&1 || declare -p "${dst}" >/dev/null 2>&1; then
+            continue
+        fi
+
+        # Export destination (allow empty string)
+        if [ -n "${val+x}" ]; then
+            export "${dst}=${val}"
+        else
+            export "${dst}="
+        fi
+
+        # Only unset old source variable if it was defined and unset_old requested
+        if [ "${unset_old}" = "true" ] && [ "${present}" = "1" ]; then
+            unset "${src}" 2>/dev/null || true
+        fi
+    done
+
+    TRANSLATE_OPTIONS_RAN="true"
+}

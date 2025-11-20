@@ -1,0 +1,96 @@
+# SPDX-FileCopyrightText: © 2025 Nfrastack <code@nfrastack.com>
+#
+# SPDX-License-Identifier: MIT
+
+ARG \
+    BASE_IMAGE
+
+FROM ${BASE_IMAGE}
+
+LABEL \
+        org.opencontainers.image.title="Vaultwarden" \
+        org.opencontainers.image.description="Containerized password manager" \
+        org.opencontainers.image.url="https://hub.docker.com/r/nfrastack/vaultwarden" \
+        org.opencontainers.image.documentation="https://github.com/nfrastack/container-vaultwarden/blob/main/README.md" \
+        org.opencontainers.image.source="https://github.com/nfrastack/container-vaultwarden.git" \
+        org.opencontainers.image.authors="Nfrastack <code@nfrastack.com>" \
+        org.opencontainers.image.vendor="Nfrastack <https://www.nfrastack.com>" \
+        org.opencontainers.image.licenses="MIT"
+
+ARG \
+    VAULTWARDEN_VERSION="1.34.3" \
+    VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
+    VAULTWARDEN_WEBVAULT_VERSION="v2025.10.1.0" \
+    VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
+
+COPY CHANGELOG.md /usr/src/container/CHANGELOG.md
+COPY LICENSE /usr/src/container/LICENSE
+COPY README.md /usr/src/container/README.md
+
+ENV \
+    NGINX_SITE_ENABLED=vaultwarden \
+    NGINX_WORKER_PROCESSES=1 \
+    NGINX_ENABLE_CREATE_SAMPLE_HTML=FALSE \
+    CONTAINER_ENABLE_SCHEDULING=TRUE \
+    IMAGE_NAME="nfrastack/vaultwarden" \
+    IMAGE_REPO_URL="https://github.com/nfrastack/container-vaultwarden/"
+
+RUN echo "" && \
+    VAULTWARDEN_BUILD_DEPS_ALPINE=" \
+                                    build-base \
+                                    cargo \
+                                    git \
+                                    libpq-dev \
+                                    mariadb-connector-c-dev \
+                                    openssl-dev \
+                                  " \
+                                  && \
+    VAULTWARDEN_WEBVAULT_BUILD_DEPS_ALPINE=" \
+                                               nodejs \
+                                               npm \
+                                           " \
+                                           && \
+    VAULTWARDEN_RUN_DEPS_ALPINE=" \
+                                    libpq \
+                                    mariadb-connector-c \
+                                  " \
+                                  && \
+    \
+    source /container/base/functions/container/build && \
+    container_build_log image && \
+    create_user vaultwarden 1000 vaultwarden 1000 /dev/null && \
+    package update && \
+    package upgrade && \
+    package install \
+                        VAULTWARDEN_BUILD_DEPS \
+                        VAULTWARDEN_WEBVAULT_BUILD_DEPS \
+                        VAULTWARDEN_RUN_DEPS \
+                        && \
+    \
+    clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
+    touch \
+            build.rs \
+            src/main.rs \
+            && \
+    cargo build \
+                --features "mysql,postgresql,sqlite" \
+                --profile "release" \
+                && \
+    mkdir -p /app && \
+    cp -aR /usr/src/vaultwarden/target/release/vaultwarden /app && \
+    container_build_log add "Vaultwarden" "${VAULTWARDEN_VERSION}" "${VAULTWARDEN_REPO_URL}" && \
+    \
+    clone_git_repo "${VAULTWARDEN_WEBVAULT_REPO_URL}" "${VAULTWARDEN_WEBVAULT_VERSION}" /usr/src/vaultwarden_webvault && \
+    npm ci && \
+    cd /usr/src/vaultwarden_webvault/apps/web && \
+    npm run dist:oss:selfhost && \
+    cp -aR /usr/src/vaultwarden_webvault/apps/web/build /app/web-vault && \
+    container_build_log add "Vaultwarden Web Vault" "${VAULTWARDEN_WEBVAULT_VERSION}" "${VAULTWARDEN_WEBVAULT_REPO_URL}" && \
+    \
+    package remove \
+                    VAULTWARDEN_BUILD_DEPS \
+                    VAULTWARDEN_WEBVAULT_BUILD_DEPS \
+                    && \
+    package cleanup
+
+COPY rootfs /

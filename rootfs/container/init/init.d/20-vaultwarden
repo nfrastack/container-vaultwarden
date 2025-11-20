@@ -1,0 +1,15 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2025 Nfrastack <code@nfrastack.com>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+SERVICE_NAME="vaultwarden"
+
+prepare_service
+
+vaultwarden_bootstrap_filesystem
+vaultwarden_configure_application
+vaultwarden_configure_proxy
+
+liftoff

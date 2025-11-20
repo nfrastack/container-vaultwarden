@@ -1,0 +1,39 @@
+#!/command/with-contenv bash
+# SPDX-FileCopyrightText: © 2025 Nfrastack <code@nfrastack.com>
+#
+# SPDX-License-Identifier: MIT
+
+source /container/base/functions/container/init
+SERVICE_NAME="vaultwarden"
+prepare_service single
+
+check_container_initialized
+check_service_initialized init
+
+export LOG_FILE="${LOG_PATH%/}/${LOG_FILE}"
+
+case "${LOG_TYPE,,}" in
+    file )
+        silent_arg=silent
+    ;;
+    console | both)
+        :
+    ;;
+esac
+
+case "${DB_TYPE,,}" in
+    sqlite* )
+        export DATABASE_URL="${DB_SQLITE_PATH%/}/${DB_SQLITE_NAME}"
+    ;;
+esac
+
+if var_true "${ENABLE_WEB_VAULT}"; then
+    start_addition=" and $(grep -o "ADD: Vaultwarden Web Vault .* |" /container/build/${IMAGE_NAME/\//_}/build.log | awk '{print $2,$3,$4,$5}'')"
+fi
+
+translate_options
+liftoff
+
+print_start "Starting $(grep -o "ADD: Vaultwarden [0-9].* |" /container/build/${IMAGE_NAME/\//_}/build.log | awk '{print $2,$3}')${start_addition}"
+${exec_arg} exec s6-setuidgid vaultwarden \
+                                            /app/vaultwarden
