@@ -1,4 +1,4 @@
-## 0.0.1pre 2025-11-19 <code at nfrastack dot com>
+## 1.0.0pre 2025-11-19 <code at nfrastack dot com>
 
    ### Added
       - Initial Release

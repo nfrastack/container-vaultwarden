@@ -10,30 +10,56 @@ prepare_service single
 check_container_initialized
 check_service_initialized init
 
-export LOG_FILE="${LOG_PATH%/}/${LOG_FILE}"
+transform_var file \
+                    ADMIN_PASS \
+                    ADMIN_TOKEN \
+                    DB_HOST \
+                    DB_NAME \
+                    DB_PASS \
+                    DB_PORT \
+                    DB_USER \
+                    DB_TYPE \
+                    WEB_VAULT_ADMIN_PASS
 
-case "${LOG_TYPE,,}" in
-    file )
-        silent_arg=silent
-    ;;
-    console | both)
-        :
-    ;;
-esac
+if [ "${SETUP_TYPE,,}" = "auto" ] ; then
+    case "${DB_TYPE,,}" in
+        mariadb | mysql )
+            export DATABASE_URL=mysql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+        ;;
+        postgres* )
+            export DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+        ;;
+        sqlite* )
+            export DATABASE_URL="${DB_SQLITE_PATH%/}/${DB_SQLITE_NAME}"
+        ;;
+    esac
 
-case "${DB_TYPE,,}" in
-    sqlite* )
-        export DATABASE_URL="${DB_SQLITE_PATH%/}/${DB_SQLITE_NAME}"
-    ;;
-esac
+    case "${LOG_TYPE,,}" in
+        both | console )
+            USE_SYSLOG=false
+        ;;
+        file )
+            export USE_SYSLOG=false
+            exec_arg=silent
+        ;;
+        syslog )
+            export USE_SYSLOG=true
+            exec_arg=silent
+        ;;
+    esac
 
-if var_true "${ENABLE_WEB_VAULT}"; then
-    start_addition=" and $(grep -o "ADD: Vaultwarden Web Vault .* |" /container/build/${IMAGE_NAME/\//_}/build.log | awk '{print $2,$3,$4,$5}')"
+    translate_options
+    export LOG_FILE="${LOG_PATH%/}/${LOG_FILE}"
+
+    export RSA_KEY_FILENAME="${JWT_PATH%/}/${JWT_BASE_FILE}"
 fi
 
-translate_options
+if var_true "${ENABLE_WEB_VAULT}" || var_true "${WEB_VAULT_ENABLED}" ; then
+    start_addition=" and $(grep -o "ADD: Vaultwarden Web Vault .* |" /container/build/"${IMAGE_NAME/\//_}"/build.log | awk '{print $2,$3,$4,$5}')"
+fi
+
 liftoff
 
-print_start "Starting $(grep -o "ADD: Vaultwarden [0-9].* |" /container/build/${IMAGE_NAME/\//_}/build.log | awk '{print $2,$3}')${start_addition}"
+print_start "Starting $(grep -o "ADD: Vaultwarden [0-9].* |" /container/build/"${IMAGE_NAME/\//_}"/build.log | awk '{print $2,$3}')${start_addition}"
 ${exec_arg} exec s6-setuidgid vaultwarden \
                                             /app/vaultwarden

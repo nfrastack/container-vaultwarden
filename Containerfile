@@ -28,12 +28,15 @@ COPY LICENSE /usr/src/container/LICENSE
 COPY README.md /usr/src/container/README.md
 
 ENV \
+    ENABLE_NGINX=FALSE \
     NGINX_SITE_ENABLED=vaultwarden \
     NGINX_WORKER_PROCESSES=1 \
     NGINX_ENABLE_CREATE_SAMPLE_HTML=FALSE \
     CONTAINER_ENABLE_SCHEDULING=TRUE \
     IMAGE_NAME="nfrastack/vaultwarden" \
     IMAGE_REPO_URL="https://github.com/nfrastack/container-vaultwarden/"
+
+COPY build-assets /build-assets
 
 RUN echo "" && \
     VAULTWARDEN_BUILD_DEPS_ALPINE=" \
@@ -68,6 +71,8 @@ RUN echo "" && \
                         && \
     \
     clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
+    build_assets /build-assets/vaultwarden/src "${GIT_REPO_VAULTWARDEN}" && \
+    build_assets scripts /build-assets/vaultwarden/scripts && \
     touch \
             build.rs \
             src/main.rs \
@@ -78,9 +83,13 @@ RUN echo "" && \
                 && \
     mkdir -p /app && \
     cp -aR /usr/src/vaultwarden/target/release/vaultwarden /app && \
+    mkdir -p /container/data/vaultwarden/ && \
+    cp -aR .env.template /container/data/vaultwarden/env.options && \
     container_build_log add "Vaultwarden" "${VAULTWARDEN_VERSION}" "${VAULTWARDEN_REPO_URL}" && \
     \
     clone_git_repo "${VAULTWARDEN_WEBVAULT_REPO_URL}" "${VAULTWARDEN_WEBVAULT_VERSION}" /usr/src/vaultwarden_webvault && \
+    build_assets /build-assets/vaultwarden_webvault/src "${GIT_REPO_VAULTWARDEN_WEBVAULT}" && \
+    build_assets scripts /build-assets/vaultwarden_webvault/scripts && \
     npm ci && \
     cd /usr/src/vaultwarden_webvault/apps/web && \
     npm run dist:oss:selfhost && \
