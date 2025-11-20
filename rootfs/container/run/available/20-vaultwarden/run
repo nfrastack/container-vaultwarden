@@ -28,7 +28,7 @@ case "${DB_TYPE,,}" in
 esac
 
 if var_true "${ENABLE_WEB_VAULT}"; then
-    start_addition=" and $(grep -o "ADD: Vaultwarden Web Vault .* |" /container/build/${IMAGE_NAME/\//_}/build.log | awk '{print $2,$3,$4,$5}'')"
+    start_addition=" and $(grep -o "ADD: Vaultwarden Web Vault .* |" /container/build/${IMAGE_NAME/\//_}/build.log | awk '{print $2,$3,$4,$5}')"
 fi
 
 translate_options
