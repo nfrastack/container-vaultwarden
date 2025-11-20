@@ -99,39 +99,61 @@ Below is the complete list of available options that can be used to customize yo
 
 #### Core Configuration
 
-| Parameter                          | Description                                                               | Default                          | Advanced |
-| ---------------------------------- | ------------------------------------------------------------------------- | -------------------------------- | -------- |
-| `SETUP_TYPE`                       | Setup mode (e.g., AUTO or MANUAL)                                         | `AUTO`                           |          |
-| `DB_TYPE`                          | Database Type for storage (supported: sqlite, mysql, postgresql)          | `sqlite`                         |          |
-| `DATA_PATH`                        | Base data directory                                                       | `/data/`                         |          |
-| `ICON_CACHE_PATH`                  | Icon cache directory (under DATA_PATH)                                    | `${DATA_PATH%/}/icon_cache/`     |          |
-| `ATTACHMENTS_PATH`                 | Attachments storage directory (under DATA_PATH)                           | `${DATA_PATH%/}/attachments/`    |          |
-| `SENDS_PATH`                       | "Sends" directory for temporary send stores                               | `${DATA_PATH%/}/sends/`          |          |
-| `TMP_PATH`                         | Temporary working directory (under DATA_PATH)                             | `${DATA_PATH%/}/tmp/`            |          |
-| `TEMPLATES_PATH`                   | Templates directory (under DATA_PATH)                                     | `${DATA_PATH%/}/templates/`      |          |
-| `DB_SQLITE_PATH`                   | Directory for SQLite DB file (under DATA_PATH)                            | `${DATA_PATH%/}/db/`             |          |
-| `DB_SQLITE_NAME`                   | SQLite file name                                                          | `db.sqlite3`                     |          |
-| `DB_SQLITE_ENABLE_WAL`             | Enable SQLite WAL (Write-Ahead Logging)                                   | `true`                           |          |
-| `DB_SQLITE_CONNECTION_RETRIES`     | Number of retries when connecting to DB                                   | `15`                             |          |
-| `DB_SQLITE_TIMEOUT_DB`             | Database connect timeout (seconds)                                        | `30`                             |          |
-| `DB_SQLITE_TIMEOUT_IDLE`           | Database idle timeout (seconds)                                           | `600`                            |          |
-| `DB_SQLITE_CONNECTIONS_MIN`        | Minimum DB connections                                                    | `2`                              |          |
-| `DB_SQLITE_CONNECTIONS_MAX`        | Maximum DB connections                                                    | `10`                             |          |
-| `DB_SQLITE_INIT`                   | DB init string to run on connection                                       | `""`                             |          |
-| `LOG_PATH`                         | Logfiles base path                                                        | `/logs/`                         |          |
-| `LOG_FILE`                         | Logfile name (may be joined to LOG_PATH by the container if not absolute) | `vaultwarden.log`                |          |
-| `LOG_TYPE`                         | Log output type (e.g., file, stdout)                                      | `file`                           |          |
-| `LOG_ENABLE_TIMESTAMPS`            | Prepend timestamps to log lines                                           | `TRUE`                           |          |
-| `LOG_TIMESTAMP_FORMAT`             | Timestamp format used for logs                                            | `%Y-%m-%d %H:%M:%S.%3f`          |          |
-| `LOG_LEVEL`                        | Log level (`trace`, `debug`, `info`, `warn`, `error`, `off`)              | `info`                           |          |
-| `ENABLE_WEB_VAULT`                 | Serve the included Web Vault static files                                 | `true`                           |          |
-| `WEB_VAULT_PATH`                   | Path to the web vault files in the container                              | `/app/web-vault/`                |          |
-| `ENABLE_WEBSOCKETS`                | Enable websocket support                                                  | `true`                           |          |
-| `WEB_VAULT_DOMAIN`                 | Domain for the web vault (used by clients)                                | `http://localhost`               |          |
-| `ENABLE_PUSH_NOTIFICATIONS`        | Enable push notifications                                                 | `false`                          |          |
-| `PUSH_NOTIFICASTIONS_RELAY_URI`    | Push notifications relay URI                                              | `https://push.bitwarden.com`     |          |
-| `PUSH_NOTIFICASTIONS_IDENTITY_URI` | Identity URI for push notifications                                       | `https://identity.bitwarden.com` |          |
-| `LISTEN_PORT`                      | Port for Vaultwarden to listen on                                         | `8000`                           |          |
+| Parameter          | Description                                 | Default                       | Advanced |
+| ------------------ | ------------------------------------------- | ----------------------------- | -------- |
+| `SETUP_TYPE`       | Setup mode `AUTO` or `MANUAL`               | `AUTO`                        |          |
+| `DATA_PATH`        | Base data directory                         | `/data/`                      |          |
+| `ICON_CACHE_PATH`  | Icon cache directory                        | `${DATA_PATH}/icon_cache/`  |          |
+| `ATTACHMENTS_PATH` | Attachments storage directory               | `${DATA_PATH}/attachments/` |          |
+| `SENDS_PATH`       | "Sends" directory for temporary send stores | `${DATA_PATH}/sends/`       |          |
+| `TMP_PATH`         | Temporary working directory                 | `${DATA_PATH}/tmp/`         |          |
+| `TEMPLATES_PATH`   | Templates directory                         | `${DATA_PATH}/templates/`   |          |
+
+#### Web Interface
+
+| Parameter           | Description                                                           | Default            | Advanced |
+| ------------------- | --------------------------------------------------------------------- | ------------------ | -------- |
+| `ENABLE_NGINX`      | Have nginx listen and forward to Web Interface for more customization | `FALSE`            |          |
+| `ENABLE_WEB_VAULT`  | Serve the included Web Vault static files                             | `TRUE`             |          |
+| `ENABLE_WEBSOCKETS` | Enable websocket support                                              | `TRUE`             |          |
+| `WEB_VAULT_PATH`    | Path to the web vault files in the container                          | `/app/web-vault/`  |          |
+| `WEB_VAULT_DOMAIN`  | Domain for the web vault (used by clients)                            | `http://localhost` |          |
+| `LISTEN_PORT`       | Port for Vaultwarden to listen on                                     | `8000`             |          |
+
+#### Database Configuration
+
+| Parameter                      | Description                                                | Default              | Advanced |
+| ------------------------------ | ---------------------------------------------------------- | -------------------- | -------- |
+| `DB_TYPE`                      | Database Type for storage `sqlite`, `mysql`, `postgresql`) | `sqlite`             |          |
+| `DB_SQLITE_PATH`               | Directory for SQLite DB file                               | `${DATA_PATH%/}/db/` |          |
+| `DB_SQLITE_NAME`               | SQLite file name                                           | `db.sqlite3`         |          |
+| `DB_SQLITE_ENABLE_WAL`         | Enable SQLite WAL (Write-Ahead Logging)                    | `true`               |          |
+| `DB_SQLITE_CONNECTION_RETRIES` | Number of retries when connecting to DB                    | `15`                 |          |
+| `DB_SQLITE_TIMEOUT_DB`         | Database connect timeout (seconds)                         | `30`                 |          |
+| `DB_SQLITE_TIMEOUT_IDLE`       | Database idle timeout (seconds)                            | `600`                |          |
+| `DB_SQLITE_CONNECTIONS_MIN`    | Minimum DB connections                                     | `2`                  |          |
+| `DB_SQLITE_CONNECTIONS_MAX`    | Maximum DB connections                                     | `10`                 |          |
+| `DB_SQLITE_INIT`               | DB init string to run on connection                        | `""`                 |          |
+
+
+#### Log Configuration
+
+| Parameter               | Description                                                  | Default                 | Advanced |
+| ----------------------- | ------------------------------------------------------------ | ----------------------- | -------- |
+| `LOG_TYPE`              | Log output type `console` `file` `both`                      | `file`                  |          |
+| `LOG_LEVEL`             | Log level (`trace`, `debug`, `info`, `warn`, `error`, `off`) | `info`                  |          |
+| `LOG_PATH`              | Logfiles path                                                | `/logs/`                |          |
+| `LOG_FILE`              | Logfile name                                                 | `vaultwarden.log`       |          |
+| `LOG_ENABLE_TIMESTAMPS` | Prepend timestamps to log lines                              | `TRUE`                  |          |
+| `LOG_TIMESTAMP_FORMAT`  | Timestamp format used for logs                               | `%Y-%m-%d %H:%M:%S.%3f` |          |
+
+#### Notifications
+
+| Parameter                          | Description                         | Default                          | Advanced |
+| ---------------------------------- | ----------------------------------- | -------------------------------- | -------- |
+| `ENABLE_PUSH_NOTIFICATIONS`        | Enable push notifications           | `false`                          |          |
+| `PUSH_NOTIFICASTIONS_RELAY_URI`    | Push notifications relay URI        | `https://push.bitwarden.com`     |          |
+| `PUSH_NOTIFICASTIONS_IDENTITY_URI` | Identity URI for push notifications | `https://identity.bitwarden.com` |          |
 
 ## Users and Groups
 
