@@ -18,7 +18,7 @@ LABEL \
         org.opencontainers.image.licenses="MIT"
 
 ARG \
-    VAULTWARDEN_VERSION="1.34.3" \
+    VAULTWARDEN_VERSION="319d98211364ac552ff608ff79d7f949f11f3403" \
     VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
     VAULTWARDEN_WEBVAULT_VERSION="v2025.10.1.0" \
     VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
@@ -41,7 +41,6 @@ COPY build-assets /build-assets
 RUN echo "" && \
     VAULTWARDEN_BUILD_DEPS_ALPINE=" \
                                     build-base \
-                                    cargo \
                                     git \
                                     libpq-dev \
                                     mariadb-connector-c-dev \
@@ -70,6 +69,10 @@ RUN echo "" && \
                         VAULTWARDEN_RUN_DEPS \
                         && \
     \
+    ## 2025-11-20 - Needs Rust > 1.89
+    echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+    package update && \
+    package install cargo@edgemain && \
     clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
     build_assets /build-assets/vaultwarden/src "${GIT_REPO_VAULTWARDEN}" && \
     build_assets scripts /build-assets/vaultwarden/scripts && \
@@ -78,7 +81,7 @@ RUN echo "" && \
             src/main.rs \
             && \
     cargo build \
-                --features "mysql,postgresql,sqlite" \
+                --features "mysql,postgresql,sqlite,enable_mimalloc" \
                 --profile "release" \
                 && \
     mkdir -p /app && \
@@ -99,7 +102,10 @@ RUN echo "" && \
     package remove \
                     VAULTWARDEN_BUILD_DEPS \
                     VAULTWARDEN_WEBVAULT_BUILD_DEPS \
+                    cargo \
                     && \
-    package cleanup
+    package cleanup && \
+    rm -rf \
+            /root/.cargo
 
 COPY rootfs /
