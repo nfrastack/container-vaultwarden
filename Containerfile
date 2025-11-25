@@ -49,7 +49,6 @@ RUN echo "" && \
                                   && \
     VAULTWARDEN_WEBVAULT_BUILD_DEPS_ALPINE=" \
                                                nodejs \
-                                               npm \
                                            " \
                                            && \
     VAULTWARDEN_RUN_DEPS_ALPINE=" \
@@ -73,9 +72,10 @@ RUN echo "" && \
     echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
     package update && \
     package install cargo@edgemain && \
-    # Npm 11.6.3 is busted 2025-11-25 https://github.com/npm/cli/issues/8757
-    npm install -g npm@11.6.2 && \
-    #
+    ## 2025-11-25 - npm 11.6.3 is broken and need to downgrade
+    echo "@321community https://dl-cdn.alpinelinux.org/alpine/v3.21/community/" >> /etc/apk/repositories && \
+    package update && \
+    package install npm@321community && \
     clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
     build_assets /build-assets/vaultwarden/src "${GIT_REPO_VAULTWARDEN}" && \
     build_assets scripts /build-assets/vaultwarden/scripts && \
@@ -102,9 +102,6 @@ RUN echo "" && \
     cp -aR /usr/src/vaultwarden_webvault/apps/web/build /app/web-vault && \
     container_build_log add "Vaultwarden Web Vault" "${VAULTWARDEN_WEBVAULT_VERSION}" "${VAULTWARDEN_WEBVAULT_REPO_URL}" && \
     \
-    # 20251125 Temporary
-    npm uninstall -g npm && \
-    #
     package remove \
                     VAULTWARDEN_BUILD_DEPS \
                     VAULTWARDEN_WEBVAULT_BUILD_DEPS \

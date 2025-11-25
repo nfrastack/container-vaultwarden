@@ -19,7 +19,7 @@ transform_var file \
                     DB_PORT \
                     DB_USER \
                     DB_TYPE \
-                    WEB_VAULT_ADMIN_PASS
+                    WEBVAULT_ADMIN_PASS
 
 if [ "${SETUP_TYPE,,}" = "auto" ] ; then
     case "${DB_TYPE,,}" in
@@ -54,7 +54,7 @@ if [ "${SETUP_TYPE,,}" = "auto" ] ; then
     export RSA_KEY_FILENAME="${JWT_PATH%/}/${JWT_BASE_FILE}"
 fi
 
-if var_true "${ENABLE_WEB_VAULT}" || var_true "${WEB_VAULT_ENABLED}" ; then
+if var_true "${ENABLE_WEBVAULT}" || var_true "${WEB_VAULT_ENABLED}" ; then
     start_addition=" and $(grep -o "ADD: Vaultwarden Web Vault .* |" /container/build/"${IMAGE_NAME/\//_}"/build.log | awk '{print $2,$3,$4,$5}')"
 fi
 

@@ -26,7 +26,7 @@ DB_SQLITE_CONNECTIONS_MIN=${DB_SQLITE_CONNECTIONS_MIN:-"2"}         #DATABASE_MI
 DB_SQLITE_CONNECTIONS_MIN=${DB_SQLITE_CONNECTIONS_MIN:-"10"}        #DATABASE_MAX_CONNS=
 DB_SQLITE_INIT=${DB_SQLITE_INIT:-""}                                #DATABASE_CONN_INIT=
 
-ENABLE_WEB_VAULT=${ENABLE_WEB_VAULT:-"true"}                        #WEB_VAULT_ENABLED=
+ENABLE_WEBVAULT=${ENABLE_WEBVAULT:-"true"}                          #WEB_VAULT_ENABLED=
 LISTEN_PORT=${LISTEN_PORT:-"8000"}                                  #ROCKET_PORT=
 LISTEN_IP=${LISTEN_IP:-"0.0.0.0"}                                   #ROCKET_ADDRESS=
 WEBVAULT_PATH=${WEBVAULT_PATH:-"/app/web-vault/"}                   #WEB_VAULT_FOLDER=
