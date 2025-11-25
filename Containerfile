@@ -73,6 +73,9 @@ RUN echo "" && \
     echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
     package update && \
     package install cargo@edgemain && \
+    # Npm 11.6.3 is busted 2025-11-25 https://github.com/npm/cli/issues/8757
+    npm install -g npm@11.6.2 && \
+    #
     clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
     build_assets /build-assets/vaultwarden/src "${GIT_REPO_VAULTWARDEN}" && \
     build_assets scripts /build-assets/vaultwarden/scripts && \
@@ -99,6 +102,9 @@ RUN echo "" && \
     cp -aR /usr/src/vaultwarden_webvault/apps/web/build /app/web-vault && \
     container_build_log add "Vaultwarden Web Vault" "${VAULTWARDEN_WEBVAULT_VERSION}" "${VAULTWARDEN_WEBVAULT_REPO_URL}" && \
     \
+    # 20251125 Temporary
+    npm uninstall -g npm && \
+    #
     package remove \
                     VAULTWARDEN_BUILD_DEPS \
                     VAULTWARDEN_WEBVAULT_BUILD_DEPS \
