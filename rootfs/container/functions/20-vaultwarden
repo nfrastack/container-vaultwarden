@@ -41,13 +41,12 @@ vaultwarden_configure_proxy() {
                                                                     LISTEN_PORT
     fi
 
-    admin_allowed=$(echo "${WEB_VAULT_ADMIN_ALLOWED_IPS}" | tr "," "\n" | uniq)
+    admin_allowed=$(echo "${WEBVAULT_ADMIN_ALLOWED_IPS}" | tr "," "\n" | uniq)
     for allowed_host in ${admin_allowed}; do
         print_debug "[configure_proxy] Web Vault - Allowing ${allowed_host} to access"
-        sed -i "/allow 127.0.0.1/a\ \ \          allow ${allowed_host};" /etc/nginx/sites.available/${NGINX_SITE_ENABLED}.conf
         sed -i \
-                    -e "/location \/admin {/a\ \             allow ${allowed_host};" \
-                /etc/nginx/sites.available/${NGINX_SITE_ENABLED}.conf
+                    -e "/location \/admin {/a\ \           allow ${allowed_host};" \
+                /etc/nginx/sites.available/vaultwarden.conf
     done
 }
 
