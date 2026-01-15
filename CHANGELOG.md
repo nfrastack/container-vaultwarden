@@ -3,6 +3,6 @@
    ### Added
       - Initial Release
       - VaultWarden 1.35.2
-      - VaultWarden Web Vault 2025.12.2
+      - VaultWarden Web Vault 2025.12.1.1
 
 
