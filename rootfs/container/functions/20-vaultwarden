@@ -19,7 +19,7 @@ vaultwarden_bootstrap_filesystem() {
             if [ "${LOG_LEVEL}" != "off" ]; then
                 create_folder \
                                 "${LOG_PATH}" \
-                                vaultwarden:vaultwarden 750
+                                vaultwarden:vaultwarden 770
 
                 create_logrotate vaultwarden "${LOG_PATH%/}"/vaultwarden.log vaultwarden vaultwarden
             fi
