@@ -18,9 +18,9 @@ LABEL \
         org.opencontainers.image.licenses="MIT"
 
 ARG \
-    VAULTWARDEN_VERSION="1.35.2" \
+    VAULTWARDEN_VERSION="1.35.3" \
     VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
-    VAULTWARDEN_WEBVAULT_VERSION="v2025.12.1.1" \
+    VAULTWARDEN_WEBVAULT_VERSION="v2026.1.0+0" \
     VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
 
 COPY CHANGELOG.md /usr/src/container/CHANGELOG.md
@@ -41,6 +41,7 @@ COPY build-assets /build-assets
 RUN echo "" && \
     VAULTWARDEN_BUILD_DEPS_ALPINE=" \
                                     build-base \
+                                    cargo \
                                     git \
                                     libpq-dev \
                                     mariadb-connector-c-dev \
@@ -49,6 +50,7 @@ RUN echo "" && \
                                   && \
     VAULTWARDEN_WEBVAULT_BUILD_DEPS_ALPINE=" \
                                                nodejs \
+                                               npm \
                                            " \
                                            && \
     VAULTWARDEN_RUN_DEPS_ALPINE=" \
@@ -69,7 +71,7 @@ RUN echo "" && \
                         && \
     \
     ## 2025-11-20 - Needs Rust > 1.89
-    echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+    #echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
     package update && \
     package install cargo@edgemain && \
     ## 2025-11-25 - npm 11.6.3 is broken and need to downgrade
