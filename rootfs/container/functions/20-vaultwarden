@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2025 Nfrastack <code@nfrastack.com>
+# SPDX-FileCopyrightText: © 2026 Nfrastack <code@nfrastack.com>
 #
 # SPDX-License-Identifier: MIT
 
@@ -19,7 +19,7 @@ vaultwarden_bootstrap_filesystem() {
             if [ "${LOG_LEVEL}" != "off" ]; then
                 create_folder \
                                 "${LOG_PATH}" \
-                                vaultwarden:vaultwarden 770
+                                vaultwarden:vaultwarden 775
 
                 create_logrotate vaultwarden "${LOG_PATH%/}"/vaultwarden.log vaultwarden vaultwarden
             fi
@@ -37,16 +37,16 @@ vaultwarden_bootstrap_filesystem() {
 
 vaultwarden_configure_proxy() {
     if var_true "${ENABLE_NGINX}" ; then
-        update_template /etc/nginx/snippets/vaultwarden_proxy.conf \
-                                                                    LISTEN_PORT
+        update_template /container/data/nginx/proxy-vaultwarden.conf \
+                                                                        LISTEN_PORT
     fi
 
     admin_allowed=$(echo "${WEBVAULT_ADMIN_ALLOWED_IPS}" | tr "," "\n" | uniq)
     for allowed_host in ${admin_allowed}; do
         print_debug "[configure_proxy] Web Vault - Allowing ${allowed_host} to access"
         sed -i \
-                    -e "/location \/admin {/a\ \           allow ${allowed_host};" \
-                /etc/nginx/sites.available/vaultwarden.conf
+                    -e "/location \/admin {/a\ \   allow ${allowed_host};" \
+                /container/data/nginx/location/admin.conf
     done
 }
 

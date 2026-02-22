@@ -1,8 +1,10 @@
-## 1.0.0pre 2025-11-19+ <code at nfrastack dot com>
+## 1.0.0 2026-02-25 <code at nfastack dot com>
 
    ### Added
       - Initial Release
-      - VaultWarden 1.35.3
+      - Uses nfrastack/container-nginx:8.x base image
+      - Alpine 3.2.3
+      - VaultWarden 1.35.4
       - VaultWarden Web Vault 2026.1.0
 
 

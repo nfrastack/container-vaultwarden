@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2025 Nfrastack <code@nfrastack.com>
+# SPDX-FileCopyrightText: © 2026 Nfrastack <code@nfrastack.com>
 #
 # SPDX-License-Identifier: MIT
 
@@ -18,7 +18,7 @@ LABEL \
         org.opencontainers.image.licenses="MIT"
 
 ARG \
-    VAULTWARDEN_VERSION="1.35.3" \
+    VAULTWARDEN_VERSION="1.35.4" \
     VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
     VAULTWARDEN_WEBVAULT_VERSION="v2026.1.0+0" \
     VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
@@ -28,17 +28,18 @@ COPY LICENSE /usr/src/container/LICENSE
 COPY README.md /usr/src/container/README.md
 
 ENV \
-    ENABLE_NGINX=FALSE \
-    NGINX_SITE_ENABLED=vaultwarden \
-    NGINX_WORKER_PROCESSES=1 \
-    NGINX_ENABLE_CREATE_SAMPLE_HTML=FALSE \
-    CONTAINER_ENABLE_SCHEDULING=TRUE \
     IMAGE_NAME="nfrastack/vaultwarden" \
     IMAGE_REPO_URL="https://github.com/nfrastack/container-vaultwarden/"
 
 COPY build-assets /build-assets
 
 RUN echo "" && \
+    BUILD_ENV=" \
+                ENABLE_NGINX=FALSE \
+                NGINX_SITE_ENABLED=vaultwarden \
+                NGINX_CREATE_SAMPLE_HTML=FALSE \
+              " \
+              && \
     VAULTWARDEN_BUILD_DEPS_ALPINE=" \
                                     build-base \
                                     cargo \
@@ -70,10 +71,6 @@ RUN echo "" && \
                         VAULTWARDEN_RUN_DEPS \
                         && \
     \
-    ## 2025-11-20 - Needs Rust > 1.89
-    #echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
-    package update && \
-    package install cargo@edgemain && \
     ## 2025-11-25 - npm 11.6.3 is broken and need to downgrade
     echo "@321community https://dl-cdn.alpinelinux.org/alpine/v3.21/community/" >> /etc/apk/repositories && \
     package update && \

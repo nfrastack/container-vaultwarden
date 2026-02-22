@@ -155,7 +155,7 @@ Below is the complete list of available options that can be used to customize yo
 | ----------------------- | ------------------------------------------------------------ | ----------------------- | -------- |
 | `LOG_TYPE`              | Log output type `console` `file` `both`                      | `file`                  |          |
 | `LOG_LEVEL`             | Log level (`trace`, `debug`, `info`, `warn`, `error`, `off`) | `info`                  |          |
-| `LOG_PATH`              | Logfiles path                                                | `/logs/`                |          |
+| `LOG_PATH`              | Logfiles path                                                | `/logs/vaultwarden`     |          |
 | `LOG_FILE`              | Logfile name                                                 | `vaultwarden.log`       |          |
 | `LOG_ENABLE_TIMESTAMPS` | Prepend timestamps to log lines                              | `TRUE`                  |          |
 | `LOG_TIMESTAMP_FORMAT`  | Timestamp format used for logs                               | `%Y-%m-%d %H:%M:%S.%3f` |          |

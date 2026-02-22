@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2025 Nfrastack <code@nfrastack.com>
+# SPDX-FileCopyrightText: © 2026 Nfrastack <code@nfrastack.com>
 #
 # SPDX-License-Identifier: MIT
 
@@ -44,7 +44,7 @@ PUSH_NOTIFICASTIONS_IDENTITY_URI=${PUSH_NOTIFICASTIONS_IDENTITY_URI:-"https://id
 LOG_ENABLE_TIMESTAMPS=${LOG_ENABLE_TIMESTAMPS:-"TRUE"}                                                  #EXTENDED_LOGGING=
 LOG_TIMESTAMP_FORMAT=${LOG_TIMESTAMP_FORMAT:-"%Y-%m-%d %H:%M:%S.%3f"}                                   #LOG_TIMESTAMP_FORMAT=
 LOG_TYPE=${LOG_TYPE:-"file"}
-LOG_PATH=${LOG_PATH:-"/logs/"}
+LOG_PATH=${LOG_PATH:-"/logs/vaultwarden/"}
 LOG_FILE=${LOG_FILE:-"vaultwarden.log"}
 LOG_LEVEL=${LOG_LEVEL:-"info"}                                                                          #LOG_LEVEL=
 
