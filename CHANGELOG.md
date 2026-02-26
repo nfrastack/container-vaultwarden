@@ -1,4 +1,4 @@
-## 1.0.0 2026-02-25 <code at nfastack dot com>
+## 1.0.0 2026-02-26 <code at nfastack dot com>
 
    ### Added
       - Initial Release
