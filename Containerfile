@@ -18,7 +18,7 @@ LABEL \
         org.opencontainers.image.licenses="MIT"
 
 ARG \
-    VAULTWARDEN_VERSION="1.35.5" \
+    VAULTWARDEN_VERSION="1.35.6" \
     VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
     VAULTWARDEN_WEBVAULT_VERSION="v2026.2.0+0" \
     VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
@@ -42,7 +42,7 @@ RUN echo "" && \
               && \
     VAULTWARDEN_BUILD_DEPS_ALPINE=" \
                                     build-base \
-                                    cargo \
+                                    #cargo \
                                     git \
                                     libpq-dev \
                                     mariadb-connector-c-dev \
@@ -75,6 +75,10 @@ RUN echo "" && \
     echo "@321community https://dl-cdn.alpinelinux.org/alpine/v3.21/community/" >> /etc/apk/repositories && \
     package update && \
     package install npm@321community && \
+    ## 2026-04-13 - Needs Rust > 1.92
+    echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+    package update && \
+    package install cargo@edgemain && \
     clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
     build_assets /build-assets/vaultwarden/src "${GIT_REPO_VAULTWARDEN}" && \
     build_assets scripts /build-assets/vaultwarden/scripts && \
@@ -92,7 +96,12 @@ RUN echo "" && \
     cp -aR .env.template /container/data/vaultwarden/env.options && \
     container_build_log add "Vaultwarden" "${VAULTWARDEN_VERSION}" "${VAULTWARDEN_REPO_URL}" && \
     \
-    clone_git_repo "${VAULTWARDEN_WEBVAULT_REPO_URL}" "${VAULTWARDEN_WEBVAULT_VERSION}" /usr/src/vaultwarden_webvault && \
+    git clone "${VAULTWARDEN_WEBVAULT_REPO_URL}" /usr/src/vaultwarden_webvault && \
+    cd /usr/src/vaultwarden_webvault && \
+    git checkout "${VAULTWARDEN_WEBVAULT_VERSION}" && \
+    export GIT_REPO_VAULTWARDEN_WEBVAULT="/usr/src/vaultwarden_webvault" && \
+    #clone_git_repo "${VAULTWARDEN_WEBVAULT_REPO_URL}" "${VAULTWARDEN_WEBVAULT_VERSION}" /usr/src/vaultwarden_webvault && \
+    \
     build_assets /build-assets/vaultwarden_webvault/src "${GIT_REPO_VAULTWARDEN_WEBVAULT}" && \
     build_assets scripts /build-assets/vaultwarden_webvault/scripts && \
     npm ci && \
