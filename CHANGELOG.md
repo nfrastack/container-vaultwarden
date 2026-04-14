@@ -1,3 +1,9 @@
+## 1.0.3 2026-04-14 <code at nfastack dot com>
+
+   ### Added
+      - VaultWarden 1.35.7
+
+
 ## 1.0.2 2026-04-13 <code at nfastack dot com>
 
    ### Added
