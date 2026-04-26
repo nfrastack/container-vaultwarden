@@ -18,9 +18,9 @@ LABEL \
         org.opencontainers.image.licenses="MIT"
 
 ARG \
-    VAULTWARDEN_VERSION="1.35.7" \
+    VAULTWARDEN_VERSION="1.35.8" \
     VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
-    VAULTWARDEN_WEBVAULT_VERSION="v2026.2.0+0" \
+    VAULTWARDEN_WEBVAULT_VERSION="v2026.3.1+0" \
     VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
 
 COPY CHANGELOG.md /usr/src/container/CHANGELOG.md
