@@ -42,7 +42,7 @@ RUN echo "" && \
               && \
     VAULTWARDEN_BUILD_DEPS_ALPINE=" \
                                     build-base \
-                                    #cargo \
+                                    cargo \
                                     git \
                                     libpq-dev \
                                     mariadb-connector-c-dev \
@@ -76,9 +76,10 @@ RUN echo "" && \
     package update && \
     package install npm@321community && \
     ## 2026-04-13 - Needs Rust > 1.92
-    echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
-    package update && \
-    package install cargo@edgemain && \
+    #echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+    #package update && \
+    #package install cargo@edgemain && \
+    package build python 3.14 buildtime && \
     clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
     build_assets /build-assets/vaultwarden/src "${GIT_REPO_VAULTWARDEN}" && \
     build_assets scripts /build-assets/vaultwarden/scripts && \
@@ -113,7 +114,7 @@ RUN echo "" && \
     package remove \
                     VAULTWARDEN_BUILD_DEPS \
                     VAULTWARDEN_WEBVAULT_BUILD_DEPS \
-                    cargo \
+                    #cargo \
                     && \
     package cleanup && \
     rm -rf \
