@@ -21,7 +21,7 @@ vaultwarden_bootstrap_filesystem() {
                                 "${LOG_PATH}" \
                                 vaultwarden:vaultwarden 775
 
-                create_logrotate vaultwarden "${LOG_PATH%/}"/vaultwarden.log vaultwarden vaultwarden
+                create_logrotate vaultwarden "${LOG_PATH%/}"/vaultwarden.log vaultwarden vaultwarden vaultwarden
             fi
         ;;
     esac
