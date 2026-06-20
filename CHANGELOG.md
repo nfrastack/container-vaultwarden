@@ -1,3 +1,9 @@
+## 1.0.6b 2026-06-20 <code at nfrastack dot com>
+
+   ### Changed
+      - Fix logrotate
+      - Alpine 2.24
+      
 ## 1.0.5 2026-05-03 <code at nfrastack dot com>
 
    ### Added
