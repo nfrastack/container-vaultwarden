@@ -1,9 +1,14 @@
-## 1.0.6b 2026-06-20 <code at nfrastack dot com>
+## 1.0.6 2026-07-24 <code at nfrastack dot com>
+
+   ### Added
+      - Vaultwarden 1.37.0
+      - Vaultwarden CLI 2026.6.4
+      - Alpine 3.24
 
    ### Changed
-      - Fix logrotate
-      - Alpine 2.24
-      
+      - Fix Logrotate
+
+
 ## 1.0.5 2026-05-03 <code at nfrastack dot com>
 
    ### Added
