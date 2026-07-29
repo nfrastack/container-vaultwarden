@@ -18,7 +18,7 @@ LABEL \
         org.opencontainers.image.licenses="MIT"
 
 ARG \
-    VAULTWARDEN_VERSION="1.37.0" \
+    VAULTWARDEN_VERSION="1.37.1" \
     VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
     VAULTWARDEN_WEBVAULT_VERSION="v2026.6.4+0" \
     VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
@@ -71,15 +71,6 @@ RUN echo "" && \
                         VAULTWARDEN_RUN_DEPS \
                         && \
     \
-    ## 2025-11-25 - npm 11.6.3 is broken and need to downgrade
-    echo "@321community https://dl-cdn.alpinelinux.org/alpine/v3.21/community/" >> /etc/apk/repositories && \
-    package update && \
-    package install npm@321community && \
-    ## 2026-04-13 - Needs Rust > 1.92
-    #echo "@edgemain https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
-    #package update && \
-    #package install cargo@edgemain && \
-    package build python 3.14 buildtime && \
     clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
     build_assets /build-assets/vaultwarden/src "${GIT_REPO_VAULTWARDEN}" && \
     build_assets scripts /build-assets/vaultwarden/scripts && \
@@ -97,11 +88,11 @@ RUN echo "" && \
     cp -aR .env.template /container/data/vaultwarden/env.options && \
     container_build_log add "Vaultwarden" "${VAULTWARDEN_VERSION}" "${VAULTWARDEN_REPO_URL}" && \
     \
-    git clone "${VAULTWARDEN_WEBVAULT_REPO_URL}" /usr/src/vaultwarden_webvault && \
-    cd /usr/src/vaultwarden_webvault && \
-    git checkout "${VAULTWARDEN_WEBVAULT_VERSION}" && \
-    export GIT_REPO_VAULTWARDEN_WEBVAULT="/usr/src/vaultwarden_webvault" && \
-    #clone_git_repo "${VAULTWARDEN_WEBVAULT_REPO_URL}" "${VAULTWARDEN_WEBVAULT_VERSION}" /usr/src/vaultwarden_webvault && \
+#git clone "${VAULTWARDEN_WEBVAULT_REPO_URL}" /usr/src/vaultwarden_webvault && \
+#   cd /usr/src/vaultwarden_webvault && \
+#   git checkout "${VAULTWARDEN_WEBVAULT_VERSION}" && \
+#   export GIT_REPO_VAULTWARDEN_WEBVAULT="/usr/src/vaultwarden_webvault" && \
+    clone_git_repo "${VAULTWARDEN_WEBVAULT_REPO_URL}" "${VAULTWARDEN_WEBVAULT_VERSION}" /usr/src/vaultwarden_webvault && \
     \
     build_assets /build-assets/vaultwarden_webvault/src "${GIT_REPO_VAULTWARDEN_WEBVAULT}" && \
     build_assets scripts /build-assets/vaultwarden_webvault/scripts && \
