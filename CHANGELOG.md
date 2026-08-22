@@ -1,3 +1,10 @@
+## 1.0.8 2026-08-22 <code at nfrastack dot com>
+
+   ### Added
+      - VaultWarden 1.37.2
+      - VW Web 2026.7.0+0
+
+
 ## 1.0.7 2026-07-29 <code at nfrastack dot com>
 
    ### Added

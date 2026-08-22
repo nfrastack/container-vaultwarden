@@ -18,9 +18,9 @@ LABEL \
         org.opencontainers.image.licenses="MIT"
 
 ARG \
-    VAULTWARDEN_VERSION="1.37.1" \
+    VAULTWARDEN_VERSION="1.37.2" \
     VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
-    VAULTWARDEN_WEBVAULT_VERSION="v2026.6.4+0" \
+    VAULTWARDEN_WEBVAULT_VERSION="v2026.7.0+0" \
     VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
 
 COPY CHANGELOG.md /usr/src/container/CHANGELOG.md
@@ -88,10 +88,6 @@ RUN echo "" && \
     cp -aR .env.template /container/data/vaultwarden/env.options && \
     container_build_log add "Vaultwarden" "${VAULTWARDEN_VERSION}" "${VAULTWARDEN_REPO_URL}" && \
     \
-#git clone "${VAULTWARDEN_WEBVAULT_REPO_URL}" /usr/src/vaultwarden_webvault && \
-#   cd /usr/src/vaultwarden_webvault && \
-#   git checkout "${VAULTWARDEN_WEBVAULT_VERSION}" && \
-#   export GIT_REPO_VAULTWARDEN_WEBVAULT="/usr/src/vaultwarden_webvault" && \
     clone_git_repo "${VAULTWARDEN_WEBVAULT_REPO_URL}" "${VAULTWARDEN_WEBVAULT_VERSION}" /usr/src/vaultwarden_webvault && \
     \
     build_assets /build-assets/vaultwarden_webvault/src "${GIT_REPO_VAULTWARDEN_WEBVAULT}" && \
