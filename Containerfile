@@ -52,6 +52,7 @@ RUN echo "" && \
     VAULTWARDEN_WEBVAULT_BUILD_DEPS_ALPINE=" \
                                                nodejs \
                                                npm \
+                                               python3-dev \
                                            " \
                                            && \
     VAULTWARDEN_RUN_DEPS_ALPINE=" \
