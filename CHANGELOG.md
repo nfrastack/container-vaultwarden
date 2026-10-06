@@ -1,3 +1,9 @@
+## 1.0.10 2026-10-06 <code at nfrastack dot com>
+
+   ### Added
+      - VaultWarden 1.37.4
+
+
 ## 1.0.9 2026-09-13 <code at nfrastack dot com>
 
    ### Added
