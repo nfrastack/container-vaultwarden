@@ -21,7 +21,8 @@ ARG \
     VAULTWARDEN_VERSION="1.37.4" \
     VAULTWARDEN_REPO_URL="https://github.com/dani-garcia/vaultwarden" \
     VAULTWARDEN_WEBVAULT_VERSION="v2026.7.0+0" \
-    VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds"
+    VAULTWARDEN_WEBVAULT_REPO_URL="https://github.com/vaultwarden/vw_web_builds" \
+    RUST_VERSION="stable"
 
 COPY CHANGELOG.md /usr/src/container/CHANGELOG.md
 COPY LICENSE /usr/src/container/LICENSE
@@ -42,7 +43,6 @@ RUN echo "" && \
               && \
     VAULTWARDEN_BUILD_DEPS_ALPINE=" \
                                     build-base \
-                                    cargo \
                                     git \
                                     libpq-dev \
                                     mariadb-connector-c-dev \
@@ -73,12 +73,14 @@ RUN echo "" && \
                         && \
     \
     clone_git_repo "${VAULTWARDEN_REPO_URL}" "${VAULTWARDEN_VERSION}" && \
+    package build rust "${RUST_VERSION}" buildtime && \
     build_assets /build-assets/vaultwarden/src "${GIT_REPO_VAULTWARDEN}" && \
     build_assets scripts /build-assets/vaultwarden/scripts && \
     touch \
             build.rs \
             src/main.rs \
             && \
+    export RUSTFLAGS="-C target-feature=-crt-static" && \
     cargo build \
                 --features "mysql,postgresql,sqlite,enable_mimalloc" \
                 --profile "release" \
@@ -102,10 +104,7 @@ RUN echo "" && \
     package remove \
                     VAULTWARDEN_BUILD_DEPS \
                     VAULTWARDEN_WEBVAULT_BUILD_DEPS \
-                    #cargo \
                     && \
-    package cleanup && \
-    rm -rf \
-            /root/.cargo
+    package cleanup
 
 COPY rootfs /

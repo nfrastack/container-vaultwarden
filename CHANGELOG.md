@@ -1,3 +1,10 @@
+## 1.0.11 2026-10-06 <code at nfrastack dot com>
+
+   ### Added
+      - Build Rust using container-base functions
+      - Dynamically link executible
+
+
 ## 1.0.10 2026-10-06 <code at nfrastack dot com>
 
    ### Added
