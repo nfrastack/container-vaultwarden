@@ -1,3 +1,8 @@
+## 1.0.12 2026-11-01 <code at nfrastack dot com>
+
+   ### Changed
+      - Vaultwarden 1.37.5, Web Vault 2026.10.1
+
 ## 1.0.11 2026-10-06 <code at nfrastack dot com>
 
    ### Added
